@@ -1,6 +1,6 @@
 # Auto APA Generator from PDFs
 
-I couldn't find a tool that did this locally, so I made one. :))
+I couldn't find a tool that did this locally, so I made one.
 
 A local Python CLI tool that turns a folder of research paper PDFs into a properly formatted APA 7th edition bibliography.
 
