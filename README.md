@@ -19,7 +19,7 @@ Under the hood, the pipeline looks like this:
 PDF -> extract text (first 3 pages)
     -> regex for DOI or arXiv ID
     -> if arXiv -> Semantic Scholar -> published DOI
-    -> if nothing found -> Ollama (llama3) extracts the title -> Semantic Scholar search -> DOI
+    -> if nothing found -> Ollama (llama3.2:3b) extracts the title -> Semantic Scholar search -> DOI
     -> doi.org CSL-JSON -> citeproc-py renders APA HTML
     -> bibliography.html
 ```
@@ -56,12 +56,12 @@ The `--email` flag is required — Crossref and doi.org use it for their polite 
 
 ## LLM Fallback (Optional)
 
-If a PDF has no DOI or arXiv ID in the text, the script tries to extract the title using a local [Ollama](https://ollama.com/) instance running `llama3`. This is optional — if Ollama isn't running, those PDFs just get logged to `errors.log`.
+If a PDF has no DOI or arXiv ID in the text, the script tries to extract the title using a local [Ollama](https://ollama.com/) instance running `llama3.2:3b`. This is optional — if Ollama isn't running, those PDFs just get logged to `errors.log`.
 
 To set it up:
 
 ```bash
-ollama pull llama3
+ollama pull llama3.2:3b
 ollama serve
 ```
 
@@ -76,7 +76,7 @@ ollama serve
 - `PyMuPDF` — PDF text extraction
 - `requests` — HTTP calls
 - `citeproc-py` — deterministic APA citation rendering
-- [Ollama](https://ollama.com/) with `llama3` (optional, for fallback)
+- [Ollama](https://ollama.com/) with `llama3.2:3b` (optional, for fallback)
 
 ## License
 
