@@ -421,10 +421,42 @@ def fetch_csl_json(doi: str, email: str) -> dict:
 # ---------------------------------------------------------------------------
 
 
+def _clean_citation_html(html: str) -> str:
+    """
+    Post-process an HTML citation string to fix known citeproc-py rendering
+    quirks:
+
+    1. Remove trailing ``(as <i>[]</i>)`` artifact.
+    2. Fix missing space before ``&amp;`` in author lists.
+    3. Collapse double periods (``..`` → ``.``).
+    4. Ensure a space before DOI/URL links that got glued to preceding text.
+    5. Collapse multiple consecutive spaces into one.
+    """
+    # 1. Remove "(as <i>[]</i>)" or similar empty-bracket artifacts
+    html = re.sub(r"\s*\(as\s*<i>\[.*?\]</i>\)", "", html)
+
+    # 2. Fix "P. A.&amp;" → "P. A., &amp;"  (missing comma+space before &)
+    #    and  "P. A. &amp;" is fine, but "A.&amp;" needs a space
+    html = re.sub(r"(\w\.)\s*(&amp;)", r"\1, \2", html)
+
+    # 3. Collapse double periods
+    html = html.replace("..", ".")
+
+    # 4. Add space before bare DOI URLs glued to preceding text
+    #    e.g. "Elsevier BV.https://doi.org" → "Elsevier BV. https://doi.org"
+    html = re.sub(r"([.)])(\s*)(https?://)", r"\1 \3", html)
+
+    # 5. Collapse multiple spaces
+    html = re.sub(r"  +", " ", html)
+
+    return html.strip()
+
+
 def generate_html_citation(csl_json_data: dict, csl_path: Path) -> str:
     """
     Take a single CSL-JSON record (as returned by doi.org) and render it
-    into an APA 7th-edition HTML string using citeproc-py.
+    into an APA 7th-edition HTML string using citeproc-py, with
+    post-processing to fix known rendering quirks.
 
     Returns an HTML fragment (e.g. containing ``<i>`` tags for journal
     titles and volume numbers).
@@ -451,7 +483,7 @@ def generate_html_citation(csl_json_data: dict, csl_path: Path) -> str:
 
     entries = bib.bibliography()
     if entries:
-        return str(entries[0])
+        return _clean_citation_html(str(entries[0]))
 
     raise RuntimeError("citeproc-py produced an empty bibliography entry.")
 
