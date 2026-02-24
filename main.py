@@ -3,8 +3,9 @@
 PDF-to-Citation CLI Tool
 ========================
 Scans a directory of research paper PDFs, extracts DOIs (and arXiv IDs) via
-regex, resolves published DOIs through Semantic Scholar, and retrieves
-deterministic APA 7th edition citations via doi.org content negotiation.
+regex, resolves published DOIs through Semantic Scholar, fetches CSL-JSON
+from doi.org, and renders deterministic APA 7th edition HTML citations
+using citeproc-py.
 
 Pipeline:
     1. Extract text from the first 3 pages of each PDF (PyMuPDF).
@@ -12,13 +13,13 @@ Pipeline:
     3. If arXiv ID found → Semantic Scholar → published DOI.
     4. If nothing found → LLM fallback (local Ollama llama3) → title →
        Semantic Scholar title search → published DOI.
-    5. Fetch APA citation from https://doi.org/{doi} (content negotiation).
-    6. Write citations to bibliography.txt, failures to errors.log.
+    5. Fetch CSL-JSON from doi.org → render APA HTML with citeproc-py.
+    6. Write citations to bibliography.html, failures to errors.log.
 
 Usage:
     python main.py --email you@example.com
     python main.py --email you@example.com --test
-    python main.py --email you@example.com --dir ./my_papers --output refs.txt
+    python main.py --email you@example.com --dir ./my_papers --output refs.html
 """
 
 from __future__ import annotations
@@ -56,7 +57,13 @@ SEMANTIC_SCHOLAR_SEARCH_URL = (
     "https://api.semanticscholar.org/graph/v1/paper/search"
 )
 
-APA_HEADERS = {"Accept": "text/x-bibliography; style=apa"}
+CSL_JSON_HEADERS = {"Accept": "application/vnd.citationstyles.csl+json"}
+
+APA_CSL_URL = (
+    "https://raw.githubusercontent.com/"
+    "citation-style-language/styles/master/apa.csl"
+)
+APA_CSL_FILE = "apa.csl"
 
 REQUEST_DELAY = 0.5  # seconds between requests (polite pool)
 
@@ -64,6 +71,38 @@ LLM_MAX_CHARS = 3000  # max chars of extracted text sent to the LLM
 
 OLLAMA_URL = "http://localhost:11434/api/generate"
 OLLAMA_MODEL = "llama3"
+
+HTML_TEMPLATE = """<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>APA 7th Edition Bibliography</title>
+  <style>
+    body {{
+      font-family: "Times New Roman", Times, serif;
+      font-size: 12pt;
+      line-height: 2;
+      max-width: 8.5in;
+      margin: 1in auto;
+    }}
+    h1 {{
+      text-align: center;
+      font-size: 12pt;
+      font-weight: bold;
+    }}
+    .citation {{
+      padding-left: 0.5in;
+      text-indent: -0.5in;
+      margin-bottom: 1em;
+    }}
+  </style>
+</head>
+<body>
+  <h1>References</h1>
+{entries}
+</body>
+</html>
+"""
 
 # ---------------------------------------------------------------------------
 # Logging Setup
@@ -306,20 +345,50 @@ def ollama_fallback(text: str) -> Optional[dict]:
 
 
 # ---------------------------------------------------------------------------
-# Step 4 — Fetch APA citation from doi.org (content negotiation)
+# Step 4a — Auto-download APA CSL style file
 # ---------------------------------------------------------------------------
 
 
-def fetch_citation(doi: str, email: str) -> str:
+def ensure_apa_csl(script_dir: Path) -> Path:
     """
-    Request the APA 7th-edition formatted citation for *doi* from
-    https://doi.org/{doi} using content-negotiation headers.
+    Check if ``apa.csl`` exists next to the script.  If not, download it
+    from the official CSL GitHub repository.
+
+    Returns the resolved Path to the CSL file.
+    Raises RuntimeError if the download fails.
+    """
+    csl_path = script_dir / APA_CSL_FILE
+    if csl_path.is_file():
+        return csl_path
+
+    print(f"  … Downloading {APA_CSL_FILE} from GitHub …")
+    try:
+        resp = requests.get(APA_CSL_URL, timeout=15)
+        resp.raise_for_status()
+    except requests.exceptions.RequestException as exc:
+        raise RuntimeError(
+            f"Failed to download {APA_CSL_FILE}: {exc}"
+        ) from exc
+
+    csl_path.write_text(resp.text, encoding="utf-8")
+    print(f"  ✓ Saved {APA_CSL_FILE}")
+    return csl_path
+
+
+# ---------------------------------------------------------------------------
+# Step 4b — Fetch CSL-JSON from doi.org
+# ---------------------------------------------------------------------------
+
+
+def fetch_csl_json(doi: str, email: str) -> dict:
+    """
+    Request the CSL-JSON metadata for *doi* from ``https://doi.org/{doi}``.
 
     Raises RuntimeError on HTTP or parsing errors.
     """
     url = DOI_URL.format(doi=doi)
     headers = {
-        **APA_HEADERS,
+        **CSL_JSON_HEADERS,
         **_polite_headers(email),
     }
 
@@ -334,16 +403,57 @@ def fetch_citation(doi: str, email: str) -> str:
         ) from exc
     except requests.exceptions.RequestException as exc:
         raise RuntimeError(
-            f"Network error fetching citation for DOI '{doi}': {exc}"
+            f"Network error fetching CSL-JSON for DOI '{doi}': {exc}"
         ) from exc
 
-    citation = resp.text.strip()
-    if not citation:
+    try:
+        data = resp.json()
+    except ValueError as exc:
         raise RuntimeError(
-            f"doi.org returned an empty citation for DOI '{doi}'."
-        )
+            f"doi.org returned invalid JSON for DOI '{doi}': {exc}"
+        ) from exc
 
-    return citation
+    return data
+
+
+# ---------------------------------------------------------------------------
+# Step 4c — Render APA HTML citation via citeproc-py
+# ---------------------------------------------------------------------------
+
+
+def generate_html_citation(csl_json_data: dict, csl_path: Path) -> str:
+    """
+    Take a single CSL-JSON record (as returned by doi.org) and render it
+    into an APA 7th-edition HTML string using citeproc-py.
+
+    Returns an HTML fragment (e.g. containing ``<i>`` tags for journal
+    titles and volume numbers).
+    """
+    from citeproc import (
+        CitationStylesBibliography,
+        CitationStylesStyle,
+        Citation,
+        CitationItem,
+    )
+    from citeproc.source.json import CiteProcJSON
+    from citeproc import formatter
+
+    # Ensure the record has an 'id' field (citeproc-py requires it)
+    if "id" not in csl_json_data:
+        csl_json_data["id"] = csl_json_data.get("DOI", "item1")
+
+    source = CiteProcJSON([csl_json_data])
+    style = CitationStylesStyle(str(csl_path))
+    bib = CitationStylesBibliography(style, source, formatter.html)
+
+    citation = Citation([CitationItem(csl_json_data["id"])])
+    bib.register(citation)
+
+    entries = bib.bibliography()
+    if entries:
+        return str(entries[0])
+
+    raise RuntimeError("citeproc-py produced an empty bibliography entry.")
 
 
 # ---------------------------------------------------------------------------
@@ -354,6 +464,7 @@ def fetch_citation(doi: str, email: str) -> str:
 def process_pdf(
     pdf_path: Path,
     email: str,
+    csl_path: Path,
     error_logger: logging.Logger,
     *,
     verbose: bool = False,
@@ -442,18 +553,28 @@ def process_pdf(
             print(f"  ✗ Could not determine DOI for '{filename}'")
         return None
 
-    # -- Fetch citation from doi.org ----------------------------------------
+    # -- Fetch CSL-JSON & render HTML citation -------------------------------
     try:
-        citation = fetch_citation(doi, email)
+        csl_data = fetch_csl_json(doi, email)
     except RuntimeError as exc:
         error_logger.warning(
-            "CITATION_FETCH_FAILED | %s | DOI=%s | %s", filename, doi, exc
+            "CSL_JSON_FETCH_FAILED | %s | DOI=%s | %s", filename, doi, exc
         )
         if verbose:
-            print(f"  ✗ Citation fetch failed: {exc}")
+            print(f"  ✗ CSL-JSON fetch failed: {exc}")
         return None
 
-    return citation
+    try:
+        citation_html = generate_html_citation(csl_data, csl_path)
+    except Exception as exc:
+        error_logger.warning(
+            "CITATION_RENDER_FAILED | %s | DOI=%s | %s", filename, doi, exc
+        )
+        if verbose:
+            print(f"  ✗ Citation render failed: {exc}")
+        return None
+
+    return citation_html
 
 
 # ---------------------------------------------------------------------------
@@ -478,8 +599,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path("bibliography.txt"),
-        help="Output file for the bibliography (default: bibliography.txt)",
+        default=Path("bibliography.html"),
+        help="Output file for the bibliography (default: bibliography.html)",
     )
     parser.add_argument(
         "--email",
@@ -534,6 +655,13 @@ def main(argv: Optional[list[str]] = None) -> int:
 
     # -- Setup --------------------------------------------------------------
     error_logger = _setup_loggers(output_file.parent)
+    script_dir = Path(__file__).resolve().parent
+
+    try:
+        csl_path = ensure_apa_csl(script_dir)
+    except RuntimeError as exc:
+        print(f"Error: {exc}", file=sys.stderr)
+        return 1
 
     citations: list[str] = []
     total = len(pdf_files)
@@ -547,6 +675,7 @@ def main(argv: Optional[list[str]] = None) -> int:
         citation = process_pdf(
             pdf_path,
             email,
+            csl_path,
             error_logger,
             verbose=verbose,
         )
@@ -554,9 +683,11 @@ def main(argv: Optional[list[str]] = None) -> int:
         if citation:
             citations.append(citation)
             if verbose:
-                preview = citation[:120]
-                ellipsis = "…" if len(citation) > 120 else ""
-                print(f"  → {preview}{ellipsis}")
+                # Strip HTML tags for the terminal preview
+                import re as _re
+                preview_text = _re.sub(r"<[^>]+>", "", citation)[:120]
+                ellipsis = "…" if len(preview_text) >= 120 else ""
+                print(f"  → {preview_text}{ellipsis}")
 
         # Polite-pool delay between iterations
         if idx < total:
@@ -564,14 +695,18 @@ def main(argv: Optional[list[str]] = None) -> int:
 
         print()
 
-    # -- Write output -------------------------------------------------------
+    # -- Write HTML output --------------------------------------------------
     if citations:
         # Sort citations alphabetically (standard for APA bibliographies)
-        citations.sort(key=str.casefold)
+        citations.sort(key=lambda c: re.sub(r"<[^>]+>", "", c).casefold())
+
+        entries = "\n".join(
+            f'  <p class="citation">{c}</p>' for c in citations
+        )
+        html = HTML_TEMPLATE.format(entries=entries)
 
         with open(output_file, "w", encoding="utf-8") as fh:
-            fh.write("\n\n".join(citations))
-            fh.write("\n")
+            fh.write(html)
 
         print(f"✓ {len(citations)} citation(s) written to '{output_file}'.")
     else:
