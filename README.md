@@ -1,25 +1,27 @@
-# pdf-to-citation
+# PDF-to-citation
 
-A local Python CLI tool that turns a folder of research paper PDFs into a properly formatted APA 7th edition bibliography — no manual typing required.
+I couldn't find a tool that did this locally, so I made one. :))
+
+A local Python CLI tool that turns a folder of research paper PDFs into a properly formatted APA 7th edition bibliography.
 
 It extracts DOIs from your PDFs using regex, resolves arXiv preprints through Semantic Scholar, and fetches mathematically precise citations via doi.org. The output is an HTML file with proper italics and hanging indents that you can copy-paste directly into Microsoft Word.
 
 ## How It Works
 
-1. Drop your PDFs into the `./papers` folder
+1. Drop your PDFs into the `./papers` folder (or specify a directory)
 2. Run the script
 3. Open `bibliography.html` in your browser
-4. Copy-paste into Word — formatting preserved
+4. Copy-paste into Word
 
 Under the hood, the pipeline looks like this:
 
 ```
-PDF → extract text (first 3 pages)
-    → regex for DOI or arXiv ID
-    → if arXiv → Semantic Scholar → published DOI
-    → if nothing found → Ollama (llama3) extracts the title → Semantic Scholar search → DOI
-    → doi.org CSL-JSON → citeproc-py renders APA HTML
-    → bibliography.html
+PDF -> extract text (first 3 pages)
+    -> regex for DOI or arXiv ID
+    -> if arXiv -> Semantic Scholar -> published DOI
+    -> if nothing found -> Ollama (llama3) extracts the title -> Semantic Scholar search -> DOI
+    -> doi.org CSL-JSON -> citeproc-py renders APA HTML
+    -> bibliography.html
 ```
 
 No LLM ever writes the citation itself. Every citation comes deterministically from doi.org + citeproc-py, so there are zero hallucinations.
