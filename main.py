@@ -10,8 +10,8 @@ Pipeline:
     1. Extract text from the first 3 pages of each PDF (PyMuPDF).
     2. Regex search for a standard DOI or arXiv ID (text + filename).
     3. If arXiv ID found → Semantic Scholar → published DOI.
-    4. If nothing found → LLM fallback (Anthropic) → title → Semantic Scholar
-       title search → published DOI.
+    4. If nothing found → LLM fallback (local Ollama llama3) → title →
+       Semantic Scholar title search → published DOI.
     5. Fetch APA citation from https://doi.org/{doi} (content negotiation).
     6. Write citations to bibliography.txt, failures to errors.log.
 
@@ -26,7 +26,6 @@ from __future__ import annotations
 import argparse
 import json
 import logging
-import os
 import re
 import sys
 import time
@@ -62,6 +61,9 @@ APA_HEADERS = {"Accept": "text/x-bibliography; style=apa"}
 REQUEST_DELAY = 0.5  # seconds between requests (polite pool)
 
 LLM_MAX_CHARS = 3000  # max chars of extracted text sent to the LLM
+
+OLLAMA_URL = "http://localhost:11434/api/generate"
+OLLAMA_MODEL = "llama3"
 
 # ---------------------------------------------------------------------------
 # Logging Setup
@@ -250,34 +252,20 @@ def get_semantic_scholar_doi_by_title(
 
 
 # ---------------------------------------------------------------------------
-# Step 3c — LLM Fallback (Anthropic) for title extraction
+# Step 3c — LLM Fallback (local Ollama) for title extraction
 # ---------------------------------------------------------------------------
 
 
-def _get_anthropic_client():
+def ollama_fallback(text: str) -> Optional[dict]:
     """
-    Lazily create an Anthropic client.  Returns None if the API key env var
-    is not set.
-    """
-    api_key = os.environ.get("ANTHROPIC_API_KEY")
-    if not api_key:
-        return None
-    try:
-        import anthropic  # noqa: F811
+    Send the first *LLM_MAX_CHARS* characters of extracted PDF text to a
+    local Ollama instance running llama3 and ask it to return a JSON object
+    with ``title`` and ``authors`` keys.
 
-        return anthropic.Anthropic(api_key=api_key)
-    except Exception:
-        return None
+    Uses Ollama's ``format: "json"`` mode for strict JSON output.
 
-
-def llm_fallback(text: str, client) -> Optional[dict]:
-    """
-    Send the first *LLM_MAX_CHARS* characters of extracted PDF text to
-    Anthropic and ask it to return a JSON object with ``title`` and
-    ``authors`` keys.
-
-    Returns a dict like ``{"title": "...", "authors": "..."}``, or None on
-    failure.
+    Returns a dict like ``{"title": "...", "authors": "..."}``, or None if
+    the Ollama server is unreachable or the response is unusable.
     """
     prompt = (
         "You are a research-paper metadata extractor. Given the following "
@@ -292,18 +280,27 @@ def llm_fallback(text: str, client) -> Optional[dict]:
         "--- END EXTRACTED TEXT ---"
     )
 
+    payload = {
+        "model": OLLAMA_MODEL,
+        "prompt": prompt,
+        "stream": False,
+        "format": "json",
+    }
+
     try:
-        response = client.messages.create(
-            model="claude-sonnet-4-20250514",
-            max_tokens=300,
-            messages=[{"role": "user", "content": prompt}],
-        )
-        raw = response.content[0].text.strip()
+        resp = requests.post(OLLAMA_URL, json=payload, timeout=60)
+        resp.raise_for_status()
+        raw = resp.json().get("response", "").strip()
         data = json.loads(raw)
         if "title" in data:
             return data
-    except Exception:
-        pass
+    except requests.exceptions.ConnectionError:
+        print("  ⚠ Ollama server not reachable at"
+              f" {OLLAMA_URL} — skipping LLM fallback")
+    except requests.exceptions.RequestException as exc:
+        print(f"  ⚠ Ollama request failed: {exc}")
+    except (json.JSONDecodeError, KeyError):
+        print("  ⚠ Ollama returned invalid JSON — skipping")
 
     return None
 
@@ -357,7 +354,6 @@ def fetch_citation(doi: str, email: str) -> str:
 def process_pdf(
     pdf_path: Path,
     email: str,
-    anthropic_client,
     error_logger: logging.Logger,
     *,
     verbose: bool = False,
@@ -368,8 +364,8 @@ def process_pdf(
     1. Extract text (first 3 pages).
     2. Regex: look for a standard DOI *and* an arXiv ID (text + filename).
     3. If arXiv ID found (and no DOI) → Semantic Scholar → published DOI.
-    4. If still no DOI and Anthropic client available → LLM title extraction
-       → Semantic Scholar title search → published DOI.
+    4. If still no DOI → local Ollama LLM title extraction → Semantic
+       Scholar title search → published DOI.
     5. Fetch APA citation from doi.org using content negotiation.
 
     Returns the APA citation string, or None (with the error logged).
@@ -412,38 +408,32 @@ def process_pdf(
                 )
         time.sleep(REQUEST_DELAY)
 
-    # -- Route 2: LLM fallback → title → Semantic Scholar title search ------
+    # -- Route 2: Ollama LLM fallback → title → Semantic Scholar search -----
     if not doi:
         if verbose:
-            print("  … No DOI yet — trying LLM fallback for title extraction")
+            print("  … No DOI yet — trying Ollama LLM fallback for title")
 
-        if anthropic_client is not None:
-            metadata = llm_fallback(text, anthropic_client)
-            if metadata and metadata.get("title"):
-                title = metadata["title"]
+        metadata = ollama_fallback(text)
+        if metadata and metadata.get("title"):
+            title = metadata["title"]
+            if verbose:
+                print(f"  … LLM extracted title: {title}")
+            doi = get_semantic_scholar_doi_by_title(title, email)
+            if doi:
                 if verbose:
-                    print(f"  … LLM extracted title: {title}")
-                doi = get_semantic_scholar_doi_by_title(title, email)
-                if doi:
-                    if verbose:
-                        print(
-                            f"  ✓ DOI found via Semantic Scholar title"
-                            f" search: {doi}"
-                        )
-                else:
-                    if verbose:
-                        print(
-                            "  ✗ Semantic Scholar title search returned no DOI"
-                        )
-                time.sleep(REQUEST_DELAY)
+                    print(
+                        f"  ✓ DOI found via Semantic Scholar title"
+                        f" search: {doi}"
+                    )
             else:
                 if verbose:
-                    print("  ✗ LLM fallback returned no usable metadata")
+                    print(
+                        "  ✗ Semantic Scholar title search returned no DOI"
+                    )
+            time.sleep(REQUEST_DELAY)
         else:
             if verbose:
-                print(
-                    "  ✗ ANTHROPIC_API_KEY not set — skipping LLM fallback"
-                )
+                print("  ✗ Ollama fallback returned no usable metadata")
 
     # -- Final check: do we have a DOI? ------------------------------------
     if not doi:
@@ -544,7 +534,6 @@ def main(argv: Optional[list[str]] = None) -> int:
 
     # -- Setup --------------------------------------------------------------
     error_logger = _setup_loggers(output_file.parent)
-    anthropic_client = _get_anthropic_client()  # None if key not set
 
     citations: list[str] = []
     total = len(pdf_files)
@@ -558,7 +547,6 @@ def main(argv: Optional[list[str]] = None) -> int:
         citation = process_pdf(
             pdf_path,
             email,
-            anthropic_client,
             error_logger,
             verbose=verbose,
         )
