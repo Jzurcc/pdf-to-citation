@@ -1,0 +1,114 @@
+2026-02-25 01:37:36,726 | WARNING | CITATION_FETCH_FAILED | 1-s2.0-S2949761224001147-main.pdf | Crossref returned HTTP 406 for DOI '10.1016/j.mcpdig.2024.11.005': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.1016/j.mcpdig.2024.11.005
+2026-02-25 01:37:38,405 | WARNING | CITATION_FETCH_FAILED | 100-Article Text-200-1-10-20250625 (2).pdf | Crossref returned HTTP 406 for DOI '10.59324/stss.2025.2(7).02': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.59324/stss.2025.2(7).02
+2026-02-25 01:37:40,085 | WARNING | CITATION_FETCH_FAILED | 100-Article Text-200-1-10-20250625.pdf | Crossref returned HTTP 406 for DOI '10.59324/stss.2025.2(7).02': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.59324/stss.2025.2(7).02
+2026-02-25 01:37:40,617 | WARNING | DOI_NOT_FOUND | 15229_Language_Models_Don_t_Al.pdf
+2026-02-25 01:37:42,274 | WARNING | CITATION_FETCH_FAILED | 18531-1033-14922-2-10-20220215.pdf | Crossref returned HTTP 406 for DOI '10.1145/1985793.1985839': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.1145/1985793.1985839
+2026-02-25 01:37:42,819 | WARNING | DOI_NOT_FOUND | 1c678c23-69df-405b-992d-130fc6d5a4f5 (1).pdf
+2026-02-25 01:37:43,357 | WARNING | DOI_NOT_FOUND | 1c678c23-69df-405b-992d-130fc6d5a4f5.pdf
+2026-02-25 01:37:43,907 | WARNING | DOI_NOT_FOUND | 2002.00388v4.pdf
+2026-02-25 01:37:44,445 | WARNING | DOI_NOT_FOUND | 2005.11401v4.pdf
+2026-02-25 01:37:44,968 | WARNING | DOI_NOT_FOUND | 2012.05876v2.pdf
+2026-02-25 01:37:45,497 | WARNING | DOI_NOT_FOUND | 2020.emnlp-main.550.pdf
+2026-02-25 01:37:46,031 | WARNING | DOI_NOT_FOUND | 2021.naacl-main.200.pdf
+2026-02-25 01:37:46,583 | WARNING | DOI_NOT_FOUND | 2023.acl-long.546.pdf
+2026-02-25 01:37:47,121 | WARNING | DOI_NOT_FOUND | 2023.emnlp-main.313.pdf
+2026-02-25 01:37:47,657 | WARNING | DOI_NOT_FOUND | 2024.acl-long.108.pdf
+2026-02-25 01:37:48,195 | WARNING | DOI_NOT_FOUND | 2024.blackboxnlp-1.18.pdf
+2026-02-25 01:37:48,728 | WARNING | DOI_NOT_FOUND | 2024.emnlp-main.943.pdf
+2026-02-25 01:37:49,252 | WARNING | DOI_NOT_FOUND | 2024.naacl-industry.19.pdf
+2026-02-25 01:37:49,774 | WARNING | DOI_NOT_FOUND | 2024.uncertainlp-1.1.pdf
+2026-02-25 01:37:50,294 | WARNING | DOI_NOT_FOUND | 2025.acl-long.289.pdf
+2026-02-25 01:37:50,835 | WARNING | DOI_NOT_FOUND | 2025.fever-1.10.pdf
+2026-02-25 01:37:51,356 | WARNING | DOI_NOT_FOUND | 2025.naacl-industry.61.pdf
+2026-02-25 01:37:53,034 | WARNING | CITATION_FETCH_FAILED | 2201.10295v2.pdf | Crossref returned HTTP 406 for DOI '10.1145/3531146.3533153': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.1145/3531146.3533153
+2026-02-25 01:37:53,562 | WARNING | DOI_NOT_FOUND | 2201.11903v6.pdf
+2026-02-25 01:37:54,102 | WARNING | DOI_NOT_FOUND | 2212.09251v1.pdf
+2026-02-25 01:37:54,626 | WARNING | DOI_NOT_FOUND | 2305.09656v3.pdf
+2026-02-25 01:37:55,151 | WARNING | DOI_NOT_FOUND | 2305.11426v3.pdf
+2026-02-25 01:37:55,680 | WARNING | DOI_NOT_FOUND | 2305.12295v2.pdf
+2026-02-25 01:37:56,219 | WARNING | DOI_NOT_FOUND | 2306.08302v3.pdf
+2026-02-25 01:37:56,744 | WARNING | DOI_NOT_FOUND | 2306.17757v1.pdf
+2026-02-25 01:37:57,281 | WARNING | DOI_NOT_FOUND | 2307.06435v10.pdf
+2026-02-25 01:37:57,816 | WARNING | DOI_NOT_FOUND | 2307.13339v1.pdf
+2026-02-25 01:37:58,345 | WARNING | DOI_NOT_FOUND | 2307.13702v1.pdf
+2026-02-25 01:37:58,873 | WARNING | DOI_NOT_FOUND | 2310.14735v6.pdf
+2026-02-25 01:37:59,420 | WARNING | DOI_NOT_FOUND | 2401.12874v2.pdf
+2026-02-25 01:37:59,946 | WARNING | DOI_NOT_FOUND | 2402.00854v4.pdf
+2026-02-25 01:38:00,466 | WARNING | DOI_NOT_FOUND | 2402.04614v3.pdf
+2026-02-25 01:38:01,033 | WARNING | DOI_NOT_FOUND | 2402.05119v5.pdf
+2026-02-25 01:38:01,573 | WARNING | DOI_NOT_FOUND | 2402.08219v2.pdf
+2026-02-25 01:38:02,108 | WARNING | DOI_NOT_FOUND | 2402.10688v2.pdf
+2026-02-25 01:38:02,629 | WARNING | DOI_NOT_FOUND | 2402.12038v3.pdf
+2026-02-25 01:38:03,145 | WARNING | DOI_NOT_FOUND | 2403.04017v1.pdf
+2026-02-25 01:38:03,662 | WARNING | DOI_NOT_FOUND | 2403.09727v1.pdf
+2026-02-25 01:38:04,193 | WARNING | DOI_NOT_FOUND | 2404.02655v2.pdf
+2026-02-25 01:38:04,729 | WARNING | DOI_NOT_FOUND | 2404.05520v3.pdf
+2026-02-25 01:38:06,440 | WARNING | CITATION_FETCH_FAILED | 2405.00648v2.pdf | Crossref returned HTTP 406 for DOI '10.1145/3689776': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.1145/3689776
+2026-02-25 01:38:06,973 | WARNING | DOI_NOT_FOUND | 2405.01249v1.pdf
+2026-02-25 01:38:07,504 | WARNING | DOI_NOT_FOUND | 2405.05904v3.pdf
+2026-02-25 01:38:08,045 | WARNING | DOI_NOT_FOUND | 2405.06211v3.pdf
+2026-02-25 01:38:08,711 | WARNING | DOI_NOT_FOUND | 2406.09827v3.pdf
+2026-02-25 01:38:09,247 | WARNING | DOI_NOT_FOUND | 2407.11373v3.pdf
+2026-02-25 01:38:09,770 | WARNING | DOI_NOT_FOUND | 2407.12216v2.pdf
+2026-02-25 01:38:10,309 | WARNING | DOI_NOT_FOUND | 2408.08921v2.pdf
+2026-02-25 01:38:10,832 | WARNING | DOI_NOT_FOUND | 2409.19817v1.pdf
+2026-02-25 01:38:12,537 | WARNING | CITATION_FETCH_FAILED | 2412.16058v1.pdf | Crossref returned HTTP 406 for DOI '10.1007/s10703-024-00454-1': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.1007/s10703-024-00454-1
+2026-02-25 01:38:13,073 | WARNING | DOI_NOT_FOUND | 2501.13958v3.pdf
+2026-02-25 01:38:14,826 | WARNING | CITATION_FETCH_FAILED | 2502.09209v1.pdf | Crossref returned HTTP 406 for DOI '10.4204/EPTCS.416.1': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.4204/EPTCS.416.1
+2026-02-25 01:38:15,373 | WARNING | DOI_NOT_FOUND | 2502.11028v3.pdf
+2026-02-25 01:38:15,914 | WARNING | DOI_NOT_FOUND | 2503.05777v2.pdf
+2026-02-25 01:38:16,451 | WARNING | DOI_NOT_FOUND | 2504.00125v1.pdf
+2026-02-25 01:38:16,986 | WARNING | DOI_NOT_FOUND | 2504.08919v1.pdf
+2026-02-25 01:38:17,506 | WARNING | DOI_NOT_FOUND | 2505.05410v1.pdf
+2026-02-25 01:38:18,028 | WARNING | DOI_NOT_FOUND | 2505.21657v5.pdf
+2026-02-25 01:38:18,561 | WARNING | DOI_NOT_FOUND | 2506.07523v2.pdf
+2026-02-25 01:38:19,109 | WARNING | DOI_NOT_FOUND | 2506.20963v2.pdf
+2026-02-25 01:38:19,628 | WARNING | DOI_NOT_FOUND | 2507.08034v1.pdf
+2026-02-25 01:38:20,162 | WARNING | DOI_NOT_FOUND | 2507.21931v1.pdf
+2026-02-25 01:38:21,833 | WARNING | CITATION_FETCH_FAILED | 2507.23581v2.pdf | Crossref returned HTTP 406 for DOI '10.1145/3774904.3792589': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.1145/3774904.3792589
+2026-02-25 01:38:23,807 | WARNING | CITATION_FETCH_FAILED | 3-PECR-MDimitrova.pdf | Crossref returned HTTP 406 for DOI '10.7546/PECR.83.25.03': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.7546/PECR.83.25.03
+2026-02-25 01:38:25,634 | WARNING | CITATION_FETCH_FAILED | 3637528.3671470.pdf | Crossref returned HTTP 406 for DOI '10.1145/3637528.3671470': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.1145/3637528.3671470
+2026-02-25 01:38:27,566 | WARNING | CITATION_FETCH_FAILED | 3639372.pdf | Crossref returned HTTP 406 for DOI '10.1145/3639372': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.1145/3639372
+2026-02-25 01:38:29,276 | WARNING | CITATION_FETCH_FAILED | 3689776.pdf | Crossref returned HTTP 406 for DOI '10.1145/3689776': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.1145/3689776
+2026-02-25 01:38:31,111 | WARNING | CITATION_FETCH_FAILED | 3695053.3731032.pdf | Crossref returned HTTP 406 for DOI '10.1145/3695053.3731032': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.1145/3695053.3731032
+2026-02-25 01:38:32,799 | WARNING | CITATION_FETCH_FAILED | 3695053.3731089.pdf | Crossref returned HTTP 406 for DOI '10.1145/3695053.3731089': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.1145/3695053.3731089
+2026-02-25 01:38:34,504 | WARNING | CITATION_FETCH_FAILED | 3716629.pdf | Crossref returned HTTP 406 for DOI '10.1145/3716629': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.1145/3716629
+2026-02-25 01:38:36,214 | WARNING | CITATION_FETCH_FAILED | 3726302.3730088.pdf | Crossref returned HTTP 406 for DOI '10.1145/3726302.3730088': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.1145/3726302.3730088
+2026-02-25 01:38:36,776 | WARNING | DOI_NOT_FOUND | 3748239.3748249.pdf
+2026-02-25 01:38:38,463 | WARNING | CITATION_FETCH_FAILED | 702.pdf | Crossref returned HTTP 406 for DOI '10.4114/intartif.vol25iss69pp13-41': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.4114/intartif.vol25iss69pp13-41
+2026-02-25 01:38:39,004 | WARNING | DOI_NOT_FOUND | [49] Graph Retrieval-Augmented Generation for Large Language Models A survey.pdf
+2026-02-25 01:38:39,523 | WARNING | DOI_NOT_FOUND | [53] SG-RAG Multi-Hop question answering with large language models through knowledge graphs.pdf
+2026-02-25 01:38:40,042 | WARNING | DOI_NOT_FOUND | [56] Knowledge Graph Combined with Retrieval-Augmented Generation for Enhancing LMs Reasoning.pdf
+2026-02-25 01:38:40,568 | WARNING | DOI_NOT_FOUND | [65] Knowledge Graph-Guided Retrieval Augmented Generation.pdf
+2026-02-25 01:38:42,294 | WARNING | CITATION_FETCH_FAILED | [67] KRAGEN a knowledge graph-enhanced RAG framework for biomedical problem solving using large language models.pdf | Crossref returned HTTP 406 for DOI '10.1093/bioinformatics/btae353': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.1093/bioinformatics/btae353
+2026-02-25 01:38:42,836 | WARNING | DOI_NOT_FOUND | [69] KnowGPT_ Knowledge Graph based PrompTing for Large Language Models.pdf
+2026-02-25 01:38:43,348 | WARNING | DOI_NOT_FOUND | a.pdf
+2026-02-25 01:38:43,865 | WARNING | DOI_NOT_FOUND | AJST-14-1-227-235.pdf
+2026-02-25 01:38:45,517 | WARNING | CITATION_FETCH_FAILED | AMI_54_from33to43.pdf | Crossref returned HTTP 406 for DOI '10.33039/ami.2021.03.009': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.33039/ami.2021.03.009
+2026-02-25 01:38:47,171 | WARNING | CITATION_FETCH_FAILED | applsci-15-01430-v2.pdf | Crossref returned HTTP 406 for DOI '10.3390/app15031430': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.3390/app15031430
+2026-02-25 01:38:48,837 | WARNING | CITATION_FETCH_FAILED | Athaluri et al., 2023.pdf | Crossref returned HTTP 406 for DOI '10.7759/cureus.37432': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.7759/cureus.37432
+2026-02-25 01:38:50,516 | WARNING | CITATION_FETCH_FAILED | BDCC-09-00087.pdf | Crossref returned HTTP 406 for DOI '10.3390/bdcc9040087': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.3390/bdcc9040087
+2026-02-25 01:38:52,187 | WARNING | CITATION_FETCH_FAILED | BDCC-09-00320-v3.pdf | Crossref returned HTTP 406 for DOI '10.3390/bdcc9120320': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.3390/bdcc9120320
+2026-02-25 01:38:53,845 | WARNING | CITATION_FETCH_FAILED | coli.a.16.pdf | Crossref returned HTTP 406 for DOI '10.1162/COLI.a.16': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.1162/COLI.a.16
+2026-02-25 01:38:55,523 | WARNING | CITATION_FETCH_FAILED | Computational Intelligence and Neuroscience - 2017 - Borkowski - Inference Engine in an Intelligent Ship Course‐Keeping.pdf | Crossref returned HTTP 406 for DOI '10.1155/2017/2561383': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.1155/2017/2561383
+2026-02-25 01:38:57,201 | WARNING | CITATION_FETCH_FAILED | computers-14-00385-v2.pdf | Crossref returned HTTP 406 for DOI '10.3390/computers14090385': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.3390/computers14090385
+2026-02-25 01:38:57,720 | WARNING | DOI_NOT_FOUND | CSIC2024-132-138.pdf
+2026-02-25 01:38:59,388 | WARNING | CITATION_FETCH_FAILED | div-class-title-fifty-years-of-prolog-and-beyond-div.pdf | Crossref returned HTTP 406 for DOI '10.1017/S1471068422000102': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.1017/S1471068422000102
+2026-02-25 01:38:59,918 | WARNING | DOI_NOT_FOUND | fin_irjmets1692101502.pdf
+2026-02-25 01:39:01,637 | WARNING | CITATION_FETCH_FAILED | IJICIS_Volume 24_Issue 4_Pages 73-81.pdf | Crossref returned HTTP 406 for DOI '10.21608/ijicis.2024.336135.1365': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.21608/ijicis.2024.336135.1365
+2026-02-25 01:39:03,445 | WARNING | CITATION_FETCH_FAILED | jmir-2025-1-e67201.pdf | Crossref returned HTTP 406 for DOI '10.2196/67201': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.2196/67201
+2026-02-25 01:39:05,271 | WARNING | CITATION_FETCH_FAILED | leveraging-prompt-engineering-in-large-language-models-for-accelerating-chemical-research.pdf | Crossref returned HTTP 406 for DOI '10.1021/acscentsci.4c01935': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.1021/acscentsci.4c01935
+2026-02-25 01:39:05,800 | WARNING | DOI_NOT_FOUND | LLM_Hallucination.pdf
+2026-02-25 01:39:07,471 | WARNING | CITATION_FETCH_FAILED | main.pdf | Crossref returned HTTP 406 for DOI '10.1016/j.xops.2023.100394': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.1016/j.xops.2023.100394
+2026-02-25 01:39:09,162 | WARNING | CITATION_FETCH_FAILED | mathematics-13-01707.pdf | Crossref returned HTTP 406 for DOI '10.3390/math13111707': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.3390/math13111707
+2026-02-25 01:39:10,877 | WARNING | CITATION_FETCH_FAILED | mental-2024-1-e57400.pdf | Crossref returned HTTP 406 for DOI '10.2196/57400': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.2196/57400
+2026-02-25 01:39:12,533 | WARNING | CITATION_FETCH_FAILED | nihms-1058031.pdf | Crossref returned HTTP 406 for DOI '10.1038/s42256-019-0048-x': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.1038/s42256-019-0048-x
+2026-02-25 01:39:14,198 | WARNING | CITATION_FETCH_FAILED | s00521-025-11666-9.pdf | Crossref returned HTTP 406 for DOI '10.1007/s00521-025-11666-9': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.1007/s00521-025-11666-9
+2026-02-25 01:39:15,951 | WARNING | CITATION_FETCH_FAILED | s10458-024-09663-8.pdf | Crossref returned HTTP 406 for DOI '10.1007/s10458-024-09663-8': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.1007/s10458-024-09663-8
+2026-02-25 01:39:17,645 | WARNING | CITATION_FETCH_FAILED | s41586-024-07421-0.pdf | Crossref returned HTTP 406 for DOI '10.1038/s41586-024-07421-0': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.1038/s41586-024-07421-0
+2026-02-25 01:39:19,412 | WARNING | CITATION_FETCH_FAILED | s41746-024-01366-4.pdf | Crossref returned HTTP 406 for DOI '10.1038/s41746-024-01366-4': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.1038/s41746-024-01366-4
+2026-02-25 01:39:21,167 | WARNING | CITATION_FETCH_FAILED | SJET_135_328-330.pdf | Crossref returned HTTP 406 for DOI '10.36347/sjet.2025.v13i05.003': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.36347/sjet.2025.v13i05.003
+2026-02-25 01:39:22,887 | WARNING | CITATION_FETCH_FAILED | The_Lean_4_Theorem_Prover_and_Programming_Language.pdf | Crossref returned HTTP 406 for DOI '10.1007/978-3-030-79876-5_37': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.1007/978-3-030-79876-5_37
+2026-02-25 01:39:24,579 | WARNING | CITATION_FETCH_FAILED | urbansci-07-00078.pdf | Crossref returned HTTP 406 for DOI '10.3390/urbansci7030078': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.3390/urbansci7030078
+2026-02-25 01:39:26,288 | WARNING | CITATION_FETCH_FAILED | WJARR-2025-0287.pdf | Crossref returned HTTP 406 for DOI '10.30574/wjarr.2025.25.1.0287': 406 Client Error: Not Acceptable for url: https://api.crossref.org/works/10.30574/wjarr.2025.25.1.0287
+2026-02-25 01:39:26,821 | WARNING | DOI_NOT_FOUND | zhengbaj_phd_lti_2024.pdf
