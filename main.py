@@ -11,7 +11,7 @@ Pipeline:
     1. Extract text from the first 3 pages of each PDF (PyMuPDF).
     2. Regex search for a standard DOI or arXiv ID (text + filename).
     3. If arXiv ID found -> Semantic Scholar -> published DOI.
-    4. If nothing found -> LLM fallback (local Ollama llama3) -> title ->
+    4. If nothing found -> LLM fallback (local Ollama llama3.2:3b) -> title ->
        Semantic Scholar title search -> published DOI.
     5. Fetch CSL-JSON from doi.org -> render APA HTML with citeproc-py.
     6. Write citations to bibliography.html, failures to errors.log.
@@ -75,7 +75,7 @@ REQUEST_DELAY = 0.5  # seconds between requests (polite pool)
 LLM_MAX_CHARS = 3000  # max chars of extracted text sent to the LLM
 
 OLLAMA_URL = "http://localhost:11434/api/generate"
-OLLAMA_MODEL = "llama3"
+OLLAMA_MODEL = "llama3.2:3b"
 
 HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="en">
@@ -303,7 +303,7 @@ def get_semantic_scholar_doi_by_title(
 def ollama_fallback(text: str) -> Optional[dict]:
     """
     Send the first *LLM_MAX_CHARS* characters of extracted PDF text to a
-    local Ollama instance running llama3 and ask it to return a JSON object
+    local Ollama instance running llama3.2:3b and ask it to return a JSON object
     with ``title`` and ``authors`` keys.
 
     Uses Ollama's ``format: "json"`` mode for strict JSON output.
