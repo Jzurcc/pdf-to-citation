@@ -2,7 +2,9 @@
 
 I couldn't find a tool that did this locally, so I made one. :))
 
-A local Python CLI tool that turns a folder of research paper PDFs into a properly formatted APA 7th edition bibliography.
+It currently use a local Ollama instance with Llama3 model, but I might add Gemini API access later.
+
+A local Python CLI tool that turns a folder of research paper PDFs into a properly formatted APA 7th edition bibliography. Unlike Zotero, this tool uses the official Crossref citation and Semantic Scholar to automatically convert arXiv preprint references to their published versions (if they ever have one). This means lazy people (a.k.a me) who work with newly written tech papers can now quickly make updated bibliographies in a single click. 
 
 It extracts DOIs from your PDFs using regex, resolves arXiv preprints through Semantic Scholar, and fetches mathematically precise citations via doi.org. The output is an HTML file with proper italics and hanging indents that you can copy-paste directly into Microsoft Word.
 
