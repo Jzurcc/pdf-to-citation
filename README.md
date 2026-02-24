@@ -13,7 +13,7 @@ It extracts DOIs from your PDFs using regex, resolves arXiv preprints through Se
 ## How It Works
 
 1. Drop your PDFs into the `./papers` folder (or specify a directory)
-2. Run the script
+2. Double-click `run.bat` (or run `python main.py` manually)
 3. Open `bibliography.html` in your browser
 4. Copy-paste into Word
 
@@ -31,6 +31,10 @@ PDF -> extract text (first 3 pages)
 No LLM ever writes the citation itself. Every citation comes deterministically from doi.org + citeproc-py, so there are zero hallucinations.
 
 ## Quick Start
+
+The easiest way is to just double-click **`run.bat`**. It handles everything automatically: checks dependencies, starts Ollama, saves your email, and runs the pipeline.
+
+If you prefer the CLI:
 
 ```bash
 # Install dependencies
