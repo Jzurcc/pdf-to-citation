@@ -1,4 +1,4 @@
-# PDF-to-citation
+# Auto APA Generator from PDFs
 
 I couldn't find a tool that did this locally, so I made one. :))
 
