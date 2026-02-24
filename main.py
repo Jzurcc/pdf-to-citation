@@ -10,10 +10,10 @@ using citeproc-py.
 Pipeline:
     1. Extract text from the first 3 pages of each PDF (PyMuPDF).
     2. Regex search for a standard DOI or arXiv ID (text + filename).
-    3. If arXiv ID found → Semantic Scholar → published DOI.
-    4. If nothing found → LLM fallback (local Ollama llama3) → title →
-       Semantic Scholar title search → published DOI.
-    5. Fetch CSL-JSON from doi.org → render APA HTML with citeproc-py.
+    3. If arXiv ID found -> Semantic Scholar -> published DOI.
+    4. If nothing found -> LLM fallback (local Ollama llama3) -> title ->
+       Semantic Scholar title search -> published DOI.
+    5. Fetch CSL-JSON from doi.org -> render APA HTML with citeproc-py.
     6. Write citations to bibliography.html, failures to errors.log.
 
 Usage:
@@ -219,7 +219,7 @@ def find_arxiv_id(text: str, filename: str) -> Optional[str]:
 
 
 # ---------------------------------------------------------------------------
-# Step 3a — Semantic Scholar: ArXiv ID → published DOI
+# Step 3a — Semantic Scholar: ArXiv ID -> published DOI
 # ---------------------------------------------------------------------------
 
 
@@ -231,7 +231,7 @@ def get_semantic_scholar_doi_by_arxiv(
     DOI from ``externalIds.DOI``, or None if the paper has no published DOI
     (i.e. it is strictly a preprint).
     """
-    # Strip version suffix for the API query (e.g. 2402.10688v2 → 2402.10688)
+    # Strip version suffix for the API query (e.g. 2402.10688v2 -> 2402.10688)
     clean_id = re.sub(r"v\d+$", "", arxiv_id)
 
     url = SEMANTIC_SCHOLAR_PAPER_URL.format(arxiv_id=clean_id)
@@ -251,7 +251,7 @@ def get_semantic_scholar_doi_by_arxiv(
 
 
 # ---------------------------------------------------------------------------
-# Step 3b — Semantic Scholar: title search → published DOI
+# Step 3b — Semantic Scholar: title search -> published DOI
 # ---------------------------------------------------------------------------
 
 
@@ -306,18 +306,7 @@ def ollama_fallback(text: str) -> Optional[dict]:
     Returns a dict like ``{"title": "...", "authors": "..."}``, or None if
     the Ollama server is unreachable or the response is unusable.
     """
-    prompt = (
-        "You are a research-paper metadata extractor. Given the following "
-        "text extracted from the first few pages of a research paper, "
-        "identify the paper's title and authors.\n\n"
-        "Return ONLY a valid JSON object with exactly two keys:\n"
-        '  "title": "<full paper title>"\n'
-        '  "authors": "<author names, comma-separated>"\n\n'
-        "Do NOT add any other text, explanation, or markdown formatting.\n\n"
-        "--- BEGIN EXTRACTED TEXT ---\n"
-        f"{text[:LLM_MAX_CHARS]}\n"
-        "--- END EXTRACTED TEXT ---"
-    )
+    prompt = f"You are a research-paper metadata extractor. Given the following text extracted from the first few pages of a research paper, identify the paper's title and authors.\n\nReturn ONLY a valid JSON object with exactly two keys:\n  \"title\": \"<full paper title>\"\n  \"authors\": \"<author names, comma-separated>\"\n\nDo NOT add any other text, explanation, or markdown formatting.\n\n--- BEGIN EXTRACTED TEXT ---\n{text[:LLM_MAX_CHARS]}\n--- END EXTRACTED TEXT ---"
 
     payload = {
         "model": OLLAMA_MODEL,
@@ -428,14 +417,14 @@ def _clean_citation_html(html: str) -> str:
 
     1. Remove trailing ``(as <i>[]</i>)`` artifact.
     2. Fix missing space before ``&amp;`` in author lists.
-    3. Collapse double periods (``..`` → ``.``).
+    3. Collapse double periods (``..`` -> ``.``).
     4. Ensure a space before DOI/URL links that got glued to preceding text.
     5. Collapse multiple consecutive spaces into one.
     """
     # 1. Remove "(as <i>[]</i>)" or similar empty-bracket artifacts
     html = re.sub(r"\s*\(as\s*<i>\[.*?\]</i>\)", "", html)
 
-    # 2. Fix "P. A.&amp;" → "P. A., &amp;"  (missing comma+space before &)
+    # 2. Fix "P. A.&amp;" -> "P. A., &amp;"  (missing comma+space before &)
     #    and  "P. A. &amp;" is fine, but "A.&amp;" needs a space
     html = re.sub(r"(\w\.)\s*(&amp;)", r"\1, \2", html)
 
@@ -443,7 +432,7 @@ def _clean_citation_html(html: str) -> str:
     html = html.replace("..", ".")
 
     # 4. Add space before bare DOI URLs glued to preceding text
-    #    e.g. "Elsevier BV.https://doi.org" → "Elsevier BV. https://doi.org"
+    #    e.g. "Elsevier BV.https://doi.org" -> "Elsevier BV. https://doi.org"
     html = re.sub(r"([.)])(\s*)(https?://)", r"\1 \3", html)
 
     # 5. Collapse multiple spaces
@@ -506,9 +495,9 @@ def process_pdf(
 
     1. Extract text (first 3 pages).
     2. Regex: look for a standard DOI *and* an arXiv ID (text + filename).
-    3. If arXiv ID found (and no DOI) → Semantic Scholar → published DOI.
-    4. If still no DOI → local Ollama LLM title extraction → Semantic
-       Scholar title search → published DOI.
+    3. If arXiv ID found (and no DOI) -> Semantic Scholar -> published DOI.
+    4. If still no DOI -> local Ollama LLM title extraction -> Semantic
+       Scholar title search -> published DOI.
     5. Fetch APA citation from doi.org using content negotiation.
 
     Returns the APA citation string, or None (with the error logged).
@@ -535,7 +524,7 @@ def process_pdf(
     if arxiv_id and verbose:
         print(f"  ✓ ArXiv ID found: {arxiv_id}")
 
-    # -- Route 1: arXiv → Semantic Scholar → published DOI ------------------
+    # -- Route 1: arXiv -> Semantic Scholar -> published DOI ------------------
     if not doi and arxiv_id:
         if verbose:
             print(f"  … Querying Semantic Scholar for arXiv:{arxiv_id}")
@@ -551,7 +540,7 @@ def process_pdf(
                 )
         time.sleep(REQUEST_DELAY)
 
-    # -- Route 2: Ollama LLM fallback → title → Semantic Scholar search -----
+    # -- Route 2: Ollama LLM fallback -> title -> Semantic Scholar search -----
     if not doi:
         if verbose:
             print("  … No DOI yet — trying Ollama LLM fallback for title")
@@ -619,7 +608,7 @@ def build_parser() -> argparse.ArgumentParser:
         description=(
             "Process a directory of research paper PDFs and generate a "
             "deterministic APA 7th edition bibliography via doi.org content "
-            "negotiation, with arXiv → Semantic Scholar DOI resolution."
+            "negotiation, with arXiv -> Semantic Scholar DOI resolution."
         ),
     )
     parser.add_argument(
@@ -719,7 +708,7 @@ def main(argv: Optional[list[str]] = None) -> int:
                 import re as _re
                 preview_text = _re.sub(r"<[^>]+>", "", citation)[:120]
                 ellipsis = "…" if len(preview_text) >= 120 else ""
-                print(f"  → {preview_text}{ellipsis}")
+                print(f"  -> {preview_text}{ellipsis}")
 
         # Polite-pool delay between iterations
         if idx < total:
