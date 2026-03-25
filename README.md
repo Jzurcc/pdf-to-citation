@@ -6,7 +6,7 @@ A Python CLI tool that turns a folder of research paper PDFs into a properly for
 
 Unlike Zotero or Citation Machine, this tool talks directly to Crossref and Semantic Scholar to resolve citations, and automatically upgrades arXiv preprints to their formally published journal versions when they exist. This means you can point it at a folder full of freshly downloaded papers and get a clean, accurate bibliography in one click.
 
-Every citation is rendered deterministically from doi.org metadata via citeproc-py — no LLM ever writes the citation itself, so there are zero hallucinations in the output.
+Every citation is rendered deterministically from doi.org metadata via citeproc-py; no LLM ever writes the citation itself, so there are zero hallucinations in the output.
 
 ## How It Works
 
