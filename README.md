@@ -6,7 +6,9 @@ A Python CLI tool that turns a folder of research paper PDFs into a properly for
 
 Unlike Zotero, this tool uses the official Crossref citation and Semantic Scholar APIs to automatically convert arXiv preprint references to their published versions (if they ever have one). This means lazy people (a.k.a me) who work with newly-written tech papers can now quickly make updated bibliographies in a single click. 
 
-It extracts DOIs from your PDFs using regex, resolves arXiv preprints through Semantic Scholar, and fetches mathematically precise citations via doi.org. The output is an HTML file with proper italics and hanging indents that you can copy-paste directly into Microsoft Word. No LLM ever writes the citation itself — every citation comes deterministically from doi.org + citeproc-py, so there are zero hallucinations.
+Unlike Citation Machine or Scribbr, this tool uses the official Crossref citation and Semantic Scholar to automatically convert arXiv preprint references to their published versions (if they ever have one). This means lazy people (a.k.a me) who work with newly-written tech papers can now quickly make updated bibliographies in a single click. 
+
+It extracts DOIs from your PDFs using regex, resolves arXiv preprints through Semantic Scholar, and fetches mathematically precise citations via doi.org. The output is an HTML file with proper italics and hanging indents that you can copy-paste directly into Microsoft Word.
 
 ## How It Works
 
