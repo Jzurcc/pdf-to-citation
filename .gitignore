@@ -1,3 +1,5 @@
 *.pdf
 bibliography.html
-errors.log
+.env
+*.log
+email_config.txt

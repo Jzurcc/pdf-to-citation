@@ -9,17 +9,44 @@ echo.
 
 :: 1. CHECK PYTHON DEPENDENCIES
 echo [System] Checking Python dependencies...
-python -c "import fitz, requests, citeproc" >nul 2>&1
+python -c "import fitz, requests, citeproc, dotenv, tqdm" >nul 2>&1
 if %errorlevel% neq 0 (
     echo [Setup] Missing required Python libraries! Installing them now...
-    pip install PyMuPDF requests citeproc-py
+    pip install PyMuPDF requests citeproc-py python-dotenv tqdm
     echo [Setup] Python libraries installed successfully!
     echo.
 ) else (
     echo [System] Python dependencies: OK
 )
 
-:: 2. CHECK OLLAMA APP INSTALLATION
+:: 2. CHECK TOGETHER AI API KEY
+echo [System] Checking for Together AI API Key...
+set TOGETHER_API_KEY=
+if exist .env (
+    for /f "tokens=1,2 delims==" %%A in (.env) do (
+        if "%%A"=="TOGETHER_API_KEY" set TOGETHER_API_KEY=%%B
+    )
+)
+if not "!TOGETHER_API_KEY!"=="" (
+    echo [System] Found Together API Key in .env! Using Together AI.
+    set SKIP_OLLAMA=1
+    goto skip_model_check
+) else (
+    echo [Setup] Together AI API key not found in .env.
+    echo Together AI is recommended as the default fast cloud alternative to local Ollama.
+    set /p NEW_TOGETHER_KEY="Enter your Together AI API key (leave blank to use local Ollama instead): "
+    if not "!NEW_TOGETHER_KEY!"=="" (
+        echo TOGETHER_API_KEY=!NEW_TOGETHER_KEY!>>.env
+        echo [System] Saved Together AI Key to .env! Using Together AI.
+        set SKIP_OLLAMA=1
+        goto skip_model_check
+    ) else (
+        echo [System] No key entered. Falling back to local Ollama app over API.
+        echo.
+    )
+)
+
+:: 3. CHECK OLLAMA APP INSTALLATION
 echo [System] Checking for Ollama...
 where ollama >nul 2>&1
 if %errorlevel% neq 0 (
@@ -47,7 +74,7 @@ if %errorlevel% neq 0 (
 :: Skip the model pulling if Ollama isn't installed
 if "!SKIP_OLLAMA!"=="1" goto skip_model_check
 
-:: 3. WAKE OLLAMA SERVER & CHECK FOR Llama 3.2:3B MODEL
+:: 4. WAKE OLLAMA SERVER & CHECK FOR Llama 3.2:3B MODEL
 echo [System] Waking up local Ollama server...
 start /b ollama serve >nul 2>&1
 timeout /t 2 /nobreak >nul
@@ -68,24 +95,29 @@ echo.
 
 :skip_model_check
 
-:: 4. CHECK SAVED EMAIL CONFIGURATION
-if exist email_config.txt (
-    set /p USER_EMAIL=<email_config.txt
+:: 5. CHECK SAVED EMAIL CONFIGURATION
+set USER_EMAIL=
+if exist .env (
+    for /f "tokens=1,2 delims==" %%A in (.env) do (
+        if "%%A"=="EMAIL" set USER_EMAIL=%%B
+    )
+)
+if not "!USER_EMAIL!"=="" (
     echo [System] Found saved email: !USER_EMAIL!
 ) else (
-    echo [Setup] First time setup!
-    echo Crossref and Semantic Scholar APIs require an email address 
+    echo [Setup] Email setup
+    echo Crossref and Semantic Scholar APIs require an email address
     echo to use their free "Polite Pool" servers.
     echo Don't worry, your credentials are safe, you won't be hacked.
     echo.
     set /p USER_EMAIL="Please enter your email address: "
-    echo !USER_EMAIL!>email_config.txt
+    echo EMAIL=!USER_EMAIL!>>.env
     echo.
-    echo [System] Email saved to email_config.txt! You won't be asked again.
+    echo [System] Email saved to .env! You won't be asked again.
 )
 echo.
 
-:: 5. EXECUTE THE PIPELINE
+:: 6. EXECUTE THE PIPELINE
 echo [System] Starting PDF processing pipeline...
 echo.
 
