@@ -4,29 +4,29 @@ I couldn't find a tool that did this locally, so I made one.
 
 A Python CLI tool that turns a folder of research paper PDFs into a properly formatted APA 7th edition bibliography.
 
-Unlike Zotero, this tool uses the official Crossref citation and Semantic Scholar APIs to automatically convert arXiv preprint references to their published versions (if they ever have one). This means lazy people (a.k.a me) who work with newly-written tech papers can now quickly make updated bibliographies in a single click. 
+Unlike Zotero or Citation Machine, this tool talks directly to Crossref and Semantic Scholar to resolve citations — and automatically upgrades arXiv preprints to their formally published journal versions when they exist. This means you can point it at a folder full of freshly downloaded papers and get a clean, accurate bibliography in one click.
 
-Unlike Citation Machine or Scribbr, this tool uses the official Crossref citation and Semantic Scholar to automatically convert arXiv preprint references to their published versions (if they ever have one). This means lazy people (a.k.a me) who work with newly-written tech papers can now quickly make updated bibliographies in a single click. 
-
-It extracts DOIs from your PDFs using regex, resolves arXiv preprints through Semantic Scholar, and fetches mathematically precise citations via doi.org. The output is an HTML file with proper italics and hanging indents that you can copy-paste directly into Microsoft Word.
+Every citation is rendered deterministically from doi.org metadata via citeproc-py — no LLM ever writes the citation itself, so there are zero hallucinations in the output.
 
 ## How It Works
 
 1. Drop your PDFs into the `./papers` folder (or specify a directory)
-2. Double-click `run.bat` (or run `python main.py` manually)
-3. Open `bibliography.html` in your browser
-4. Copy-paste into Word
+2. Double-click `run.bat`
+3. Open `bibliography.html` in your browser and copy-paste into Word
 
 Under the hood:
 
 ```
 PDF -> extract text (first 3 pages)
     -> regex for DOI or arXiv ID
-    -> if arXiv -> Semantic Scholar -> published DOI
-    -> if nothing found -> LLM extracts the title
+    -> if arXiv ID -> Semantic Scholar -> published DOI
+    -> if still no DOI -> Together AI extracts the title
        -> Semantic Scholar title search -> DOI
        -> Crossref title search (fallback) -> DOI
-    -> doi.org CSL-JSON -> citeproc-py renders APA HTML
+    -> fetch CSL-JSON from doi.org
+    -> if DOI is arXiv -> Crossref title search for published version
+       -> upgrade to published DOI if found
+    -> citeproc-py renders APA 7th edition HTML
     -> bibliography.html
 ```
 
@@ -41,16 +41,13 @@ If you prefer the CLI:
 pip install -r requirements.txt
 
 # Run on all PDFs in ./papers
-python main.py --email you@example.com
-
-# Or use as a Python module
 python -m pdf_to_citation --email you@example.com
 
 # Test on a single PDF first
-python main.py --email you@example.com --test -v
+python -m pdf_to_citation --email you@example.com --test -v
 
 # Custom input/output
-python main.py --email you@example.com --dir ./my_papers --output refs.html
+python -m pdf_to_citation --email you@example.com --dir ./my_papers --output refs.html
 ```
 
 The `--email` flag is required unless you set `EMAIL` in your `.env` file — Crossref and doi.org use it for their polite pool (you get faster responses).
@@ -68,9 +65,9 @@ The `--email` flag is required unless you set `EMAIL` in your `.env` file — Cr
 
 ## LLM Fallback
 
-If a PDF has no DOI or arXiv ID in the text, the script tries to extract the title using an LLM, then searches Semantic Scholar + Crossref by title.
+If a PDF has no DOI or arXiv ID in its text, the script uses an LLM to extract the paper's title, then searches by that title on Semantic Scholar and Crossref.
 
-**Together AI (recommended, default)** — set your API key in `.env`:
+**Together AI (default)** — uses `Llama-3.3-70B-Instruct-Turbo` via the Together AI API. Get a free key at [together.ai](https://together.ai) and set it in your `.env` file:
 
 ```
 TOGETHER_API_KEY=your_key_here
@@ -78,14 +75,14 @@ TOGETHER_API_KEY=your_key_here
 
 `run.bat` will prompt you for this on first run and save it automatically.
 
-**Local Ollama (alternative)** — if no Together AI key is set, falls back to a local [Ollama](https://ollama.com/) instance running `llama3.2:3b`:
+**Local Ollama (fallback)** — if no Together AI key is set, the tool falls back to a local [Ollama](https://ollama.com/) instance running `llama3.2:3b`:
 
 ```bash
 ollama pull llama3.2:3b
 ollama serve
 ```
 
-If neither is available, those PDFs just get logged to `errors.log`.
+If neither is configured, PDFs without a detectable DOI are logged to `errors.log` and skipped.
 
 ## Resume Support
 
@@ -115,8 +112,8 @@ Both are optional if you pass `--email` on the command line and don't need Toget
 - `requests` — HTTP calls
 - `citeproc-py` — deterministic APA citation rendering
 - `python-dotenv` — `.env` file loading
-- `tqdm` — progress bar (optional, auto-detected)
-- [Ollama](https://ollama.com/) with `llama3.2:3b` (optional, for local LLM fallback)
+- `tqdm` — progress bar
+- A free [Together AI](https://together.ai) API key (recommended) or a local [Ollama](https://ollama.com/) instance as fallback
 
 ## License
 
